@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; }
+
+body {
+  background: #0f0f11;
+  color: #e8e8ec;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  overflow: hidden;
+  height: 100vh;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2e2e36; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #6b6b7a; }
+
+.font-display { font-family: 'Bebas Neue', sans-serif; }

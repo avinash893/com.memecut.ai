@@ -13,6 +13,7 @@ import AITab        from './components/AITab.jsx'
 import CaptionsTab  from './components/CaptionsTab.jsx'
 import ShortsTab    from './components/ShortsTab.jsx'
 import SettingsTab  from './components/SettingsTab.jsx'
+import MCPTab       from './components/MCPTab.jsx'
 
 const TABS = [
   { id: 'tagger',   icon: '🎬', label: 'TAG' },
@@ -21,6 +22,7 @@ const TABS = [
   { id: 'captions', icon: '💬', label: 'CAPTIONS' },
   { id: 'shorts',   icon: '📱', label: 'SHORTS' },
   { id: 'settings', icon: '⚙️', label: 'SETTINGS' },
+  { id: 'mcp',      icon: '🧠', label: 'MCP' },
   { id: 'export',   icon: '🚀', label: 'EXPORT' },
   { id: 'debug',    icon: '🐛', label: 'DEBUG' },
 ]
@@ -180,6 +182,7 @@ function AppInner() {
         {state.activeTab === 'captions' && <CaptionsTab />}
         {state.activeTab === 'shorts'   && <ShortsTab />}
         {state.activeTab === 'settings' && <SettingsTab />}
+        {state.activeTab === 'mcp'      && <MCPTab />}
         {state.activeTab === 'export'   && <ExportTab />}
         {state.activeTab === 'debug'    && <DebugConsole onRefreshSeq={refreshSequence} />}
       </div>

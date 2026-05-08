@@ -46,16 +46,19 @@ function getCSI() {
     const env = _csi.getHostEnvironment();
     cepLog('info', `Host: ${env.appName} ${env.appVersion}`);
     
-    // FORCE RELOAD host/index.jsx to bypass Premiere Pro caching old broken versions
+    // FORCE RELOAD host scripts to bypass Premiere Pro caching old broken versions
     const extPath = _csi.getSystemPath('extension').replace(/\\/g, '/');
-    const jsxPath = extPath + "/host/index.jsx";
-    const loaderScript = "var res; try { $.evalFile('" + jsxPath + "'); res = 'OK'; } catch(e) { res = e.name + ': ' + e.message + ' at line ' + e.line; } res;";
-    
-    _csi.evalScript(loaderScript, (res) => {
-      cepLog('info', 'Forced evaluation of host/index.jsx result:', res);
-      if (res !== 'OK') {
-        cepLog('error', 'CRITICAL: Failed to load host/index.jsx:', res);
-      }
+    const hostScripts = ['host/index.jsx', 'host/mcp_core.jsx'];
+    hostScripts.forEach((relativePath) => {
+      const jsxPath = `${extPath}/${relativePath}`;
+      const loaderScript = "var res; try { $.evalFile('" + jsxPath + "'); res = 'OK'; } catch(e) { res = e.name + ': ' + e.message + ' at line ' + e.line; } res;";
+
+      _csi.evalScript(loaderScript, (res) => {
+        cepLog('info', `Forced evaluation of ${relativePath} result:`, res);
+        if (res !== 'OK') {
+          cepLog('error', `CRITICAL: Failed to load ${relativePath}:`, res);
+        }
+      });
     });
   } catch(e) {
     cepLog('warn', 'Could not read host environment:', e.message);
@@ -197,6 +200,26 @@ export async function resolveAudioPath() {
   cepLog('error', 'resolveAudioPath: ❌ no audio found anywhere');
   throw new Error('No audio found on timeline. Ensure A1 has a clip.');
 }
+
+// ─── MCP-INSPIRED PREMIERE HELPERS ───────────────────────────────────────────
+
+function escJsxString(value) {
+  return String(value ?? '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+export const mcpCommand = (command, args = {}) =>
+  jsx(`mcpx_execute("${escJsxString(command)}", "${escJsxString(JSON.stringify(args))}")`);
+
+export const mcpPing = () => mcpCommand('ping');
+export const mcpProjectInfo = () => mcpCommand('projectInfo');
+export const mcpSequenceList = () => mcpCommand('sequenceList');
+export const mcpTimelineState = () => mcpCommand('timelineState');
+export const mcpFavoriteLocations = () => mcpCommand('favoriteLocations');
+export const mcpBrowseMediaFiles = (folderPath) => mcpCommand('browseMediaFiles', { path: folderPath });
+export const mcpImportFiles = (paths) => mcpCommand('importFiles', { paths: Array.isArray(paths) ? paths : [paths] });
+export const mcpAddMarker = (seconds, name, comment, duration) =>
+  mcpCommand('addMarker', { seconds, name, comment, duration });
+export const mcpSetPlayhead = (seconds) => mcpCommand('setPlayhead', { seconds });
 
 // ─── MARKERS ─────────────────────────────────────────────────────────────────
 
